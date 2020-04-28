@@ -65,7 +65,7 @@ export default class App extends React.Component {
   return (
     <View style={styles.container}>
      <StatusBar barStyle="light-content" />
-     <Text style={styles.title}>To Do</Text>
+     <Text style={styles.title}>Kawaii ★ To Do </Text>
      <View style={styles.card}>
       <TextInput style={styles.input} placeholder={"New To Do"} 
       value={newToDo}
@@ -78,7 +78,8 @@ export default class App extends React.Component {
       <ScrollView contentContainerStyle={
         styles.toDos
       }>
-          {Object.values(toDos).map(toDo =>
+          {Object.values(toDos).sort((a,b)=>
+          a.createdAt - b.createdAt).map(toDo =>
           <ToDo 
           key={toDo.id}
           deleteToDo={this._deleteToDo}
@@ -98,10 +99,15 @@ export default class App extends React.Component {
       newToDo: text
     });
   };
-  _loadToDo=()=>{
-   this.setState({
-     loadedToDo:true
-   });
+  _loadToDo=async()=>{
+    try{
+     const toDos = await AsyncStorage.getItem("toDos");
+     const parsedToDos =JSON.parse(toDos);
+     this.setState({ loadedToDo:true,toDos: parsedToDos});
+    }catch(err){
+      console.log(err);
+    }
+  
    };
    _addToDo=()=>{
    const {newToDo}=this.state;
